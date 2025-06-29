@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomWork - Handwritten Text Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-header {
+            margin-bottom: 30px;
+        }
+
+        .step-title {
+            font-size: 1.8rem;
+            color: #1f2937;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .step-description {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 150px;
+            font-family: inherit;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        .customization-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .page-input {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .page-input h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .sample-fonts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .sample-font {
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .sample-font:hover {
+            background: #e2e8f0;
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        .sample-font.selected {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+
+        .sample-font h4 {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .sample-font .font-preview {
+            font-size: 16px;
+            font-style: italic;
+        }
+
+        .preview-container {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            margin-bottom: 30px;
+        }
+
+        .page-preview {
+            width: 794px;
+            height: 1123px;
+            background: white;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transform: scale(0.4);
+            transform-origin: top center;
+            border: 1px solid #ddd;
+        }
+
+        .page-content {
+            padding: 40px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .font-upload {
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .font-upload:hover {
+            border-color: #4f46e5;
+            background: #f8fafc;
+        }
+
+        .font-upload.dragover {
+            border-color: #4f46e5;
+            background: #ede9fe;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .color-option.selected {
+            border-color: #1f2937;
+            transform: scale(1.1);
+        }
+
+        .color-blue { background: #1e40af; }
+        .color-black { background: #1f2937; }
+        .color-red { background: #dc2626; }
+        .color-green { background: #059669; }
+        .color-purple { background: #7c3aed; }
+
+        .range-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .range-slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+        }
+
+        .range-value {
+            font-weight: 600;
+            color: #4f46e5;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .font-section {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .font-section h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+            
+            .customization-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-preview {
+                transform: scale(0.25);
+            }
+            
+            .button-group {
+                justify-content: stretch;
+            }
+            
+            .btn {
+                flex: 1;
+            }
+
+            .sample-fonts {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HomWork</h1>
+            <p>Transform your digital text into beautiful handwritten pages</p>
+        </div>
+
+        <div class="main-content">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <!-- Step 1: Page Selection -->
+            <div class="step active" id="step1">
+                <div class="step-header">
+                    <h2 class="step-title">📄 Select Number of Pages</h2>
+                    <p class="step-description">Choose how many A4 pages you want to create</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="pageCount">Number of Pages:</label>
+                    <input type="number" id="pageCount" class="form-control" min="1" max="50" value="1" placeholder="Enter number of pages">
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="goToStep(2)">Next Step →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Content Input -->
+            <div class="step" id="step2">
+                <div class="step-header">
+                    <h2 class="step-title">✍️ Enter Your Content</h2>
+                    <p class="step-description">Type or paste the content for each page</p>
+                </div>
+
+                <div id="contentInputs"></div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="goToStep(1)">← Previous</button>
+                    <button class="btn btn-primary" onclick="goToStep(3)">Next Step →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Font Upload & Customization -->
+            <div class="step" id="step3">
+                <div class="step-header">
+                    <h2 class="step-title">🎨 Customize Your Handwriting</h2>
+                    <p class="step-description">Choose from sample fonts or upload your own</p>
+                </div>
+
+                <div class="font-section">
+                    <h3>Choose Sample Font</h3>
+                    <div class="sample-fonts">
+                        <div class="sample-font" onclick="selectSampleFont(this, 'AntonyLark', 'AntonyLark')">
+                            <h4>AntonyLark</h4>
+                            <div class="font-preview" style="font-family: 'AntonyLark', cursive;">The quick brown fox</div>
+                        </div>
+                        <div class="sample-font" onclick="selectSampleFont(this, 'BradenHill', 'BradenHill')">
+                            <h4>BradenHill</h4>
+                            <div class="font-preview" style="font-family: 'BradenHill', cursive;">The quick brown fox</div>
+                        </div>
+                        <div class="sample-font" onclick="selectSampleFont(this, 'DonaldRoss', 'DonaldRoss')">
+                            <h4>DonaldRoss</h4>
+                            <div class="font-preview" style="font-family: 'DonaldRoss', cursive;">The quick brown fox</div>
+                        </div>
+                        <div class="sample-font" onclick="selectSampleFont(this, 'SamRoberts2', 'SamRoberts2')">
+                            <h4>SamRoberts2</h4>
+                            <div class="font-preview" style="font-family: 'SamRoberts2', cursive;">The quick brown fox</div>
+                        </div>
+                        <div class="sample-font" onclick="selectSampleFont(this, 'RuthStafford', 'RuthStafford')">
+                            <h4>RuthStafford</h4>
+                            <div class="font-preview" style="font-family: 'RuthStafford', cursive;">The quick brown fox</div>
+                        </div>
+                        <div class="sample-font" onclick="selectSampleFont(this, 'JulianDean', 'JulianDean')">
+                            <h4>JulianDean</h4>
+                            <div class="font-preview" style="font-family: 'JulianDean', cursive;">The quick brown fox</div>
+                        </div>
+                        <div class="sample-font" onclick="selectSampleFont(this, 'VickyCaulfield', 'VickyCaulfield')">
+                            <h4>VickyCaulfield</h4>
+                            <div class="font-preview" style="font-family: 'VickyCaulfield', cursive;">The quick brown fox</div>
+                        </div>
+                        <!-- Your Custom Fonts -->
+                        <div class="sample-font" onclick="selectSampleFont(this, 'JohnCaplin', 'JohnCaplin')">
+                            <h4>JohnCaplin</h4>
+                            <div class="font-preview" style="font-family: 'JohnCaplin', cursive;">The quick brown fox</div>
+                        </div>
+                        <div class="sample-font" onclick="selectSampleFont(this, 'JER', 'JER')">
+                            <h4>JER</h4>
+                            <div class="font-preview" style="font-family: 'JER', cursive;">The quick brown fox</div>
+                        </div>
+                        <div class="sample-font" onclick="selectSampleFont(this, 'CursiveVersion', 'CursiveVersion')">
+                            <h4>CursiveVersion</h4>
+                            <div class="font-preview" style="font-family: 'CursiveVersion', cursive;">The quick brown fox</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Or Upload Custom Font (.ttf format):</label>
+                    <div class="font-upload" id="fontUpload">
+                        <input type="file" id="fontFile" accept=".ttf" style="display: none;">
+                        <p>📁 Click to upload or drag & drop your .ttf font file</p>
+                        <small>Supports .ttf format only</small>
+                    </div>
+                </div>
+
+                <div class="customization-grid">
+                    <div class="form-group">
+                        <label class="form-label">Font Color:</label>
+                        <div class="color-options">
+                            <div class="color-option color-blue selected" data-color="#1e40af" onclick="selectColor(this)"></div>
+                            <div class="color-option color-black" data-color="#1f2937" onclick="selectColor(this)"></div>
+                            <div class="color-option color-red" data-color="#dc2626" onclick="selectColor(this)"></div>
+                            <div class="color-option color-green" data-color="#059669" onclick="selectColor(this)"></div>
+                            <div class="color-option color-purple" data-color="#7c3aed" onclick="selectColor(this)"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Font Size:</label>
+                        <div class="range-group">
+                            <input type="range" class="range-slider" id="fontSize" min="12" max="48" value="18" oninput="updateFontSize(this.value)">
+                            <span class="range-value" id="fontSizeValue">18px</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Line Spacing:</label>
+                        <div class="range-group">
+                            <input type="range" class="range-slider" id="lineSpacing" min="1" max="3" step="0.1" value="1.5" oninput="updateLineSpacing(this.value)">
+                            <span class="range-value" id="lineSpacingValue">1.5</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Page Margin:</label>
+                        <div class="range-group">
+                            <input type="range" class="range-slider" id="pageMargin" min="20" max="80" value="40" oninput="updatePageMargin(this.value)">
+                            <span class="range-value" id="pageMarginValue">40px</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="goToStep(2)">← Previous</button>
+                    <button class="btn btn-primary" onclick="goToStep(4)">Preview Pages →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Preview -->
+            <div class="step" id="step4">
+                <div class="step-header">
+                    <h2 class="step-title">👀 Preview Your Pages</h2>
+                    <p class="step-description">Review your handwritten pages before downloading</p>
+                </div>
+
+                <div class="preview-container">
+                    <div id="previewPages"></div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="goToStep(3)">← Back to Customize</button>
+                    <button class="btn btn-primary" onclick="downloadPages()">📥 Download All Pages</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let pageContents = [];
+        let customFont = null;
+        let selectedFont = 'cursive';
+        let fontColor = '#1e40af';
+        let fontSize = 18;
+        let lineSpacing = 1.5;
+        let pageMargin = 40;
+
+        // Load Google Fonts
+        const link = document.createElement('link');
+        link.href = 'https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Dancing+Script:wght@400;700&family=Kalam:wght@300;400;700&family=Shadows+Into+Light&family=Indie+Flower&display=swap';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+
+        // Load your custom fonts
+        const customFonts = [
+            { name: 'JohnCaplin', url: 'JohnCaplin.ttf' },
+            { name: 'JER', url: 'JER.ttf' },
+            { name: 'CursiveVersion', url: 'CursiveVersion.ttf' },
+            { name: 'AntonyLark', url: 'AntonyLark.ttf' },
+            { name: 'BradenHill', url: 'BradenHill.ttf' },
+            { name: 'DonaldRoss', url: 'DonaldRoss.ttf' },
+            { name: 'SamRoberts2', url: 'SamRoberts2.ttf' },
+            { name: 'RuthStafford', url: 'RuthStafford.ttf' },
+            { name: 'JulianDean', url: 'JulianDean.ttf' },
+            { name: 'VickyCaulfield', url: 'VickyCaulfield.ttf' }
+            // Add more fonts as needed
+        ];
+
+        // Load custom fonts
+        customFonts.forEach(font => {
+            const fontFace = new FontFace(font.name, `url(${font.url})`);
+            fontFace.load().then((loadedFont) => {
+                document.fonts.add(loadedFont);
+            }).catch((error) => {
+                console.error(`Failed to load font ${font.name}:`, error);
+            });
+        });
+
+        // Initialize
+        updateProgress();
+
+        // Font upload functionality
+        document.getElementById('fontUpload').onclick = () => document.getElementById('fontFile').click();
+        document.getElementById('fontFile').onchange = handleFontUpload;
+
+        // Drag and drop for font upload
+        const fontUpload = document.getElementById('fontUpload');
+        fontUpload.ondragover = (e) => {
+            e.preventDefault();
+            fontUpload.classList.add('dragover');
+        };
+        fontUpload.ondragleave = () => fontUpload.classList.remove('dragover');
+        fontUpload.ondrop = (e) => {
+            e.preventDefault();
+            fontUpload.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].name.endsWith('.ttf')) {
+                handleFontFile(files[0]);
+            }
+        };
+
+        function handleFontUpload(e) {
+            const file = e.target.files[0];
+            if (file) handleFontFile(file);
+        }
+
+        function handleFontFile(file) {
+            if (!file.name.endsWith('.ttf')) {
+                alert('Please upload a .ttf font file only');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const fontData = e.target.result;
+                const fontName = 'CustomHandwriting';
+                
+                // Create font face
+                const fontFace = new FontFace(fontName, fontData);
+                fontFace.load().then((loadedFont) => {
+                    document.fonts.add(loadedFont);
+                    customFont = fontName;
+                    selectedFont = fontName;
+                    
+                    // Clear sample font selections
+                    document.querySelectorAll('.sample-font').forEach(el => el.classList.remove('selected'));
+                    
+                    document.getElementById('fontUpload').innerHTML = `
+                        <p>✅ Font uploaded successfully!</p>
+                        <small>${file.name}</small>
+                    `;
+                }).catch((error) => {
+                    console.error('Font loading failed:', error);
+                    alert('Failed to load font. Please try another file.');
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function selectSampleFont(element, fontFamily, fontName) {
+            // Remove previous selection
+            document.querySelectorAll('.sample-font').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            selectedFont = fontFamily;
+            customFont = null;
+            
+            // Reset font upload display
+            document.getElementById('fontUpload').innerHTML = `
+                <p>📁 Click to upload or drag & drop your .ttf font file</p>
+                <small>Supports .ttf format only</small>
+            `;
+        }
+
+        function goToStep(step) {
+            if (step === 2) {
+                const pageCount = parseInt(document.getElementById('pageCount').value);
+                if (pageCount < 1 || pageCount > 50) {
+                    alert('Please enter a valid number of pages (1-50)');
+                    return;
+                }
+                generateContentInputs(pageCount);
+            }
+            
+            if (step === 4) {
+                generatePreview();
+            }
+
+            // Hide current step
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            // Show new step
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const progress = (currentStep / 4) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function generateContentInputs(pageCount) {
+            const container = document.getElementById('contentInputs');
+            container.innerHTML = '';
+            pageContents = [];
+
+            for (let i = 0; i < pageCount; i++) {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page-input';
+                pageDiv.innerHTML = `
+                    <h3>Page ${i + 1}</h3>
+                    <textarea class="form-control" placeholder="Enter content for page ${i + 1}..." oninput="updatePageContent(${i}, this.value)"></textarea>
+                `;
+                container.appendChild(pageDiv);
+                pageContents.push('');
+            }
+        }
+
+        function updatePageContent(index, content) {
+            pageContents[index] = content;
+        }
+
+        function selectColor(element) {
+            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            fontColor = element.dataset.color;
+        }
+
+        function updateFontSize(value) {
+            fontSize = parseInt(value);
+            document.getElementById('fontSizeValue').textContent = value + 'px';
+        }
+
+        function updateLineSpacing(value) {
+            lineSpacing = parseFloat(value);
+            document.getElementById('lineSpacingValue').textContent = value;
+        }
+
+        function updatePageMargin(value) {
+            pageMargin = parseInt(value);
+            document.getElementById('pageMarginValue').textContent = value + 'px';
+        }
+
+        function generatePreview() {
+            const container = document.getElementById('previewPages');
+            container.innerHTML = '';
+
+            pageContents.forEach((content, index) => {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page-preview';
+                pageDiv.innerHTML = `
+                    <div class="page-content" style="
+                        font-family: ${selectedFont};
+                        color: ${fontColor};
+                        font-size: ${fontSize}px;
+                        line-height: ${lineSpacing};
+                        padding: ${pageMargin}px;
+                    ">${content || `Page ${index + 1} - No content entered`}</div>
+                `;
+                container.appendChild(pageDiv);
+            });
+        }
+
+        async function downloadPages() {
+            const pages = document.querySelectorAll('.page-preview');
+            
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+                
+                // Create canvas
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 794;
+                canvas.height = 1123;
+                
+                // Fill white background
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Set text properties
+                ctx.fillStyle = fontColor;
+                ctx.font = `${fontSize}px ${selectedFont}`;
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                
+                const content = pageContents[i] || `Page ${i + 1} - No content entered`;
+                const lines = content.split('\n');
+                const lineHeight = fontSize * lineSpacing;
+                
+                let y = pageMargin;
+                
+                lines.forEach(line => {
+                    const words = line.split(' ');
+                    let currentLine = '';
+                    let x = pageMargin;
+                    
+                    words.forEach(word => {
+                        const testLine = currentLine + word + ' ';
+                        const metrics = ctx.measureText(testLine);
+                        
+                        if (metrics.width > canvas.width - (pageMargin * 2) && currentLine !== '') {
+                            ctx.fillText(currentLine, x, y);
+                            currentLine = word + ' ';
+                            y += lineHeight;
+                        } else {
+                            currentLine = testLine;
+                        }
+                    });
+                    
+                    ctx.fillText(currentLine, x, y);
+                    y += lineHeight;
+                });
+                
+                // Download image
+                const link = document.createElement('a');
+                link.download = `handwritten-page-${i + 1}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                
+                // Small delay between downloads
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            alert('All pages downloaded successfully!');
+        }
+    </script>
+</body>
+</html>
